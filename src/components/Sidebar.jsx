@@ -1,9 +1,13 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { playlists } from '../data/mockData';
+import useMusicPlayer from '../hooks/useMusicPlayer';
 
 const Sidebar = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { playPlaylist } = useMusicPlayer();
+    const [activePlaylist, setActivePlaylist] = useState(null);
 
     const navItems = [
         { path: '/', label: 'Home', icon: '🏠' },
@@ -15,11 +19,43 @@ const Sidebar = () => {
 
     const isActive = (path) => location.pathname === path;
 
+    const handlePlaylistClick = (playlist) => {
+        setActivePlaylist(playlist.id);
+        playPlaylist(playlist);
+        // Navigate to home to show the playing playlist
+        navigate('/');
+    };
+
+    const handleLibraryItemClick = (item) => {
+        console.log(`${item} clicked`);
+        // You can add specific functionality for each library item
+        switch (item) {
+            case 'liked':
+                navigate('/library');
+                break;
+            case 'downloads':
+                navigate('/library');
+                break;
+            case 'podcasts':
+                navigate('/library');
+                break;
+            default:
+                break;
+        }
+    };
+
+    const handleUserSettings = () => {
+        console.log('User settings clicked');
+        // You can add user settings functionality here
+    };
+
     return (
         <aside className="w-60 h-full bg-gray-900 text-white flex flex-col">
             {/* Logo */}
             <div className="p-6">
-                <h1 className="text-2xl font-bold text-green-500">Spotify 2.0</h1>
+                <h1 className="text-2xl font-bold text-green-500 cursor-pointer" onClick={() => navigate('/')}>
+                    Spotify 2.0
+                </h1>
             </div>
 
             {/* Navigation */}
@@ -30,8 +66,8 @@ const Sidebar = () => {
                             <Link
                                 to={item.path}
                                 className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${isActive(item.path)
-                                        ? 'bg-gray-800 text-white'
-                                        : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                    ? 'bg-gray-800 text-white'
+                                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                     }`}
                             >
                                 <span className="text-lg">{item.icon}</span>
@@ -48,15 +84,24 @@ const Sidebar = () => {
                     Your Library
                 </h3>
                 <div className="space-y-2">
-                    <button className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 transition-colors w-full text-left">
+                    <button
+                        className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 transition-colors w-full text-left"
+                        onClick={() => handleLibraryItemClick('liked')}
+                    >
                         <span>❤️</span>
                         <span>Liked Songs</span>
                     </button>
-                    <button className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 transition-colors w-full text-left">
+                    <button
+                        className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 transition-colors w-full text-left"
+                        onClick={() => handleLibraryItemClick('downloads')}
+                    >
                         <span>📥</span>
                         <span>Downloads</span>
                     </button>
-                    <button className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 transition-colors w-full text-left">
+                    <button
+                        className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 transition-colors w-full text-left"
+                        onClick={() => handleLibraryItemClick('podcasts')}
+                    >
                         <span>📻</span>
                         <span>Podcasts</span>
                     </button>
@@ -72,7 +117,11 @@ const Sidebar = () => {
                     {playlists.map((playlist) => (
                         <button
                             key={playlist.id}
-                            className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 transition-colors w-full text-left"
+                            className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors w-full text-left ${activePlaylist === playlist.id
+                                    ? 'bg-gray-800 text-white'
+                                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                }`}
+                            onClick={() => handlePlaylistClick(playlist)}
                         >
                             <img
                                 src={playlist.cover}
@@ -83,6 +132,9 @@ const Sidebar = () => {
                                 <p className="text-sm font-medium truncate">{playlist.name}</p>
                                 <p className="text-xs text-gray-500 truncate">{playlist.description}</p>
                             </div>
+                            {activePlaylist === playlist.id && (
+                                <span className="text-green-500">▶️</span>
+                            )}
                         </button>
                     ))}
                 </div>
@@ -91,14 +143,17 @@ const Sidebar = () => {
             {/* User Section */}
             <div className="p-6 border-t border-gray-800">
                 <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors">
                         👤
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-white truncate">User Name</p>
                         <p className="text-xs text-gray-400 truncate">Premium</p>
                     </div>
-                    <button className="text-gray-400 hover:text-white">
+                    <button
+                        className="text-gray-400 hover:text-white transition-colors"
+                        onClick={handleUserSettings}
+                    >
                         ⚙️
                     </button>
                 </div>

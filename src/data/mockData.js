@@ -6,7 +6,7 @@ export const songs = [
         album: "After Hours",
         duration: "3:20",
         cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop&crop=center",
-        audio: "https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav"
+        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
     },
     {
         id: 2,
@@ -15,7 +15,7 @@ export const songs = [
         album: "÷ (Divide)",
         duration: "3:53",
         cover: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=300&h=300&fit=crop&crop=center",
-        audio: "https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav"
+        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
     },
     {
         id: 3,
@@ -24,7 +24,7 @@ export const songs = [
         album: "The Kids Are Coming",
         duration: "3:29",
         cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop&crop=center",
-        audio: "https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav"
+        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
     },
     {
         id: 4,
@@ -33,7 +33,7 @@ export const songs = [
         album: "Uptown Special",
         duration: "3:55",
         cover: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=300&h=300&fit=crop&crop=center",
-        audio: "https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav"
+        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
     },
     {
         id: 5,
@@ -42,7 +42,7 @@ export const songs = [
         album: "Vida",
         duration: "4:41",
         cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop&crop=center",
-        audio: "https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav"
+        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
     },
     {
         id: 6,
@@ -51,7 +51,7 @@ export const songs = [
         album: "When We All Fall Asleep, Where Do We Go?",
         duration: "3:14",
         cover: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=300&h=300&fit=crop&crop=center",
-        audio: "https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav"
+        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"
     },
     {
         id: 7,
@@ -60,7 +60,7 @@ export const songs = [
         album: "Future Nostalgia",
         duration: "3:23",
         cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop&crop=center",
-        audio: "https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav"
+        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3"
     },
     {
         id: 8,
@@ -68,8 +68,8 @@ export const songs = [
         artist: "The Kid LAROI & Justin Bieber",
         album: "F*CK LOVE 3: OVER YOU",
         duration: "2:21",
-        cover: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=300&h=300&fit=crop&crop=center",
-        audio: "https://www2.cs.uic.edu/~i101/SoundFiles/ImperialMarch60.wav"
+        cover: "https://images.unsplash.com/photo-1511379938547/c1f69419868d?w=300&h=300&fit=crop&crop=center",
+        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
     }
 ];
 

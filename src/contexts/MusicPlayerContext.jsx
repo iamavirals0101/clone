@@ -24,7 +24,7 @@ const playerReducer = (state, action) => {
         case 'SET_PLAYING':
             return { ...state, isPlaying: action.payload };
         case 'SET_QUEUE':
-            return { ...state, queue: action.payload, currentIndex: 0 };
+            return { ...state, queue: action.payload };
         case 'NEXT_SONG':
             if (state.currentIndex < state.queue.length - 1) {
                 return {
@@ -59,6 +59,8 @@ const playerReducer = (state, action) => {
             return { ...state, duration: action.payload };
         case 'SET_LOADING':
             return { ...state, isLoading: action.payload };
+        case 'SET_CURRENT_INDEX':
+            return { ...state, currentIndex: action.payload };
         default:
             return state;
     }
@@ -75,6 +77,7 @@ export const MusicPlayerProvider = ({ children }) => {
             dispatch({ type: 'SET_CURRENT_TIME', payload: audio.currentTime });
         };
         const handleLoadedMetadata = () => {
+            console.log('Audio metadata loaded, duration:', audio.duration);
             dispatch({ type: 'SET_DURATION', payload: audio.duration });
             dispatch({ type: 'SET_LOADING', payload: false });
         };
@@ -106,6 +109,7 @@ export const MusicPlayerProvider = ({ children }) => {
     // Update audio source when current song changes
     useEffect(() => {
         if (state.currentSong) {
+            console.log('Loading audio for song:', state.currentSong.title, 'URL:', state.currentSong.audio);
             const audio = audioRef.current;
             audio.src = state.currentSong.audio;
             audio.load();
@@ -120,15 +124,18 @@ export const MusicPlayerProvider = ({ children }) => {
     useEffect(() => {
         const audio = audioRef.current;
         if (state.isPlaying && state.currentSong) {
+            console.log('Attempting to play audio for:', state.currentSong.title);
             audio.play().catch(error => {
                 console.error('Playback failed:', error);
                 dispatch({ type: 'SET_PLAYING', payload: false });
             });
         } else {
+            console.log('Pausing audio');
             audio.pause();
         }
     }, [state.isPlaying, state.currentSong]);
     const playSong = (song, queue = null) => {
+        console.log('playSong called with:', song, queue);
         let newQueue = queue || state.queue;
         let index = newQueue.findIndex((s) => s.id === song.id);
         if (index === -1) {
@@ -136,9 +143,11 @@ export const MusicPlayerProvider = ({ children }) => {
             newQueue = [song];
             index = 0;
         }
+        console.log('Setting queue:', newQueue, 'index:', index);
         dispatch({ type: 'SET_QUEUE', payload: newQueue });
         dispatch({ type: 'SET_CURRENT_SONG', payload: song });
-        state.currentIndex = index;
+        // Set the current index properly
+        dispatch({ type: 'SET_CURRENT_INDEX', payload: index });
         dispatch({ type: 'SET_PLAYING', payload: true });
     };
     const playPlaylist = (playlist) => {

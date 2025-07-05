@@ -5,28 +5,9 @@ import Sidebar from "./components/Sidebar";
 import PlayerBar from "./components/PlayerBar";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
-
-// Placeholder components for other pages
-const Library = () => (
-  <div className="p-8">
-    <h1 className="text-4xl font-bold text-white mb-6">Your Library</h1>
-    <p className="text-gray-400">Your saved songs, albums, and playlists will appear here.</p>
-  </div>
-);
-
-const Playlists = () => (
-  <div className="p-8">
-    <h1 className="text-4xl font-bold text-white mb-6">Playlists</h1>
-    <p className="text-gray-400">All your playlists will be displayed here.</p>
-  </div>
-);
-
-const Genres = () => (
-  <div className="p-8">
-    <h1 className="text-4xl font-bold text-white mb-6">Genres</h1>
-    <p className="text-gray-400">Browse music by genre.</p>
-  </div>
-);
+import Library from "./pages/Library";
+import Playlists from "./pages/Playlists";
+import Genres from "./pages/Genres";
 
 function App() {
   return (
