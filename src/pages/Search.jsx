@@ -1,186 +1,202 @@
-import React, { useState, useMemo } from 'react';
-import { songs, playlists, albums } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { useSpotify } from '../contexts/SpotifyContext';
 import useMusicPlayer from '../hooks/useMusicPlayer';
 
 const Search = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const { playSong, playPlaylist } = useMusicPlayer();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const { searchTracks, isAuthenticated, spotifyTracks, error } = useSpotify();
+    const { playSong } = useMusicPlayer();
 
-    const searchResults = useMemo(() => {
-        if (!searchTerm.trim()) return { songs: [], playlists: [], albums: [] };
+    // Search when query changes
+    useEffect(() => {
+        if (searchQuery.trim() && isAuthenticated) {
+            const delayDebounceFn = setTimeout(async () => {
+                setIsSearching(true);
+                try {
+                    const results = await searchTracks(searchQuery, 20);
+                    setSearchResults(results);
+                } catch (error) {
+                    console.error('Search error:', error);
+                } finally {
+                    setIsSearching(false);
+                }
+            }, 500);
 
-        const term = searchTerm.toLowerCase();
+            return () => clearTimeout(delayDebounceFn);
+        } else {
+            setSearchResults([]);
+        }
+    }, [searchQuery, isAuthenticated, searchTracks]);
 
-        const filteredSongs = songs.filter(
-            song => song.title.toLowerCase().includes(term) ||
-                song.artist.toLowerCase().includes(term) ||
-                song.album.toLowerCase().includes(term)
-        );
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim() && isAuthenticated) {
+            setIsSearching(true);
+            searchTracks(searchQuery, 20).then(results => {
+                setSearchResults(results);
+                setIsSearching(false);
+            });
+        }
+    };
 
-        const filteredPlaylists = playlists.filter(
-            playlist => playlist.name.toLowerCase().includes(term) ||
-                playlist.description.toLowerCase().includes(term)
-        );
+    const handlePlaySong = (song) => {
+        if (song.spotifyUri) {
+            // For Spotify tracks, we'll use the preview URL if available
+            if (song.audio) {
+                playSong(song, searchResults);
+            } else {
+                alert('This track is not available for preview. Please play it on Spotify.');
+            }
+        } else {
+            playSong(song, searchResults);
+        }
+    };
 
-        const filteredAlbums = albums.filter(
-            album => album.title.toLowerCase().includes(term) ||
-                album.artist.toLowerCase().includes(term)
-        );
-
-        return {
-            songs: filteredSongs,
-            playlists: filteredPlaylists,
-            albums: filteredAlbums
-        };
-    }, [searchTerm]);
-
-    const hasResults = searchResults.songs.length > 0 ||
-        searchResults.playlists.length > 0 ||
-        searchResults.albums.length > 0;
-
-    return (
-        <div className="p-8 space-y-8">
-            {/* Search Header */}
-            <div className="mb-8">
-                <h1 className="text-4xl font-bold text-white mb-4">Search</h1>
-                <div className="relative max-w-md">
-                    <input
-                        type="text"
-                        placeholder="What do you want to listen to?"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full px-4 py-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    />
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        🔍
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-gray-900 text-white p-8">
+                <div className="max-w-4xl mx-auto">
+                    <h1 className="text-3xl font-bold mb-8">Search</h1>
+                    <div className="text-center py-12">
+                        <div className="text-gray-400 text-6xl mb-4">🔍</div>
+                        <h2 className="text-2xl font-semibold mb-4">Connect to Spotify to Search</h2>
+                        <p className="text-gray-400 mb-6">
+                            Connect your Spotify account to search and play millions of songs.
+                        </p>
+                        <div className="bg-gray-800 p-6 rounded-lg max-w-md mx-auto">
+                            <p className="text-sm text-gray-300 mb-4">
+                                Features you'll get:
+                            </p>
+                            <ul className="text-sm text-gray-400 space-y-2">
+                                <li>• Search millions of tracks</li>
+                                <li>• Play previews of songs</li>
+                                <li>• Access your playlists</li>
+                                <li>• Get personalized recommendations</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
+        );
+    }
 
-            {/* Search Results */}
-            {searchTerm && (
-                <div className="space-y-8">
-                    {!hasResults && (
-                        <div className="text-center py-12">
-                            <p className="text-gray-400 text-lg">No results found for "{searchTerm}"</p>
-                            <p className="text-gray-500 text-sm mt-2">Try searching for a different term</p>
+    return (
+        <div className="min-h-screen bg-gray-900 text-white p-8">
+            <div className="max-w-4xl mx-auto">
+                <h1 className="text-3xl font-bold mb-8">Search</h1>
+
+                {/* Search Form */}
+                <form onSubmit={handleSearch} className="mb-8">
+                    <div className="relative">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search for songs, artists, or albums..."
+                            className="w-full px-4 py-3 pl-12 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        />
+                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            🔍
                         </div>
-                    )}
-
-                    {/* Songs Results */}
-                    {searchResults.songs.length > 0 && (
-                        <section>
-                            <h2 className="text-2xl font-bold text-white mb-6">Songs</h2>
-                            <div className="space-y-2">
-                                {searchResults.songs.map((song, index) => (
-                                    <div
-                                        key={song.id}
-                                        className="flex items-center justify-between p-3 hover:bg-gray-800 rounded-lg cursor-pointer group"
-                                        onClick={() => playSong(song, searchResults.songs)}
-                                    >
-                                        <div className="flex items-center space-x-4">
-                                            <span className="text-gray-400 w-8">{index + 1}</span>
-                                            <img
-                                                src={song.cover}
-                                                alt={song.title}
-                                                className="w-12 h-12 rounded object-cover"
-                                            />
-                                            <div>
-                                                <h4 className="text-white font-medium">{song.title}</h4>
-                                                <p className="text-gray-400 text-sm">{song.artist}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center space-x-4">
-                                            <span className="text-gray-400 text-sm">{song.duration}</span>
-                                            <button className="text-gray-400 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                                                ▶
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
+                        {isSearching && (
+                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-500"></div>
                             </div>
-                        </section>
-                    )}
-
-                    {/* Playlists Results */}
-                    {searchResults.playlists.length > 0 && (
-                        <section>
-                            <h2 className="text-2xl font-bold text-white mb-6">Playlists</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-                                {searchResults.playlists.map((playlist) => (
-                                    <div
-                                        key={playlist.id}
-                                        className="bg-gray-800 p-4 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer group"
-                                        onClick={() => playPlaylist(playlist)}
-                                    >
-                                        <div className="relative mb-4">
-                                            <img
-                                                src={playlist.cover}
-                                                alt={playlist.name}
-                                                className="w-full aspect-square object-cover rounded-md"
-                                            />
-                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded-md flex items-center justify-center">
-                                                <button className="bg-green-500 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    ▶
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <h3 className="text-white font-semibold truncate">{playlist.name}</h3>
-                                        <p className="text-gray-400 text-sm truncate">{playlist.description}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-
-                    {/* Albums Results */}
-                    {searchResults.albums.length > 0 && (
-                        <section>
-                            <h2 className="text-2xl font-bold text-white mb-6">Albums</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-                                {searchResults.albums.map((album) => (
-                                    <div
-                                        key={album.id}
-                                        className="bg-gray-800 p-4 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer group"
-                                    >
-                                        <div className="relative mb-4">
-                                            <img
-                                                src={album.cover}
-                                                alt={album.title}
-                                                className="w-full aspect-square object-cover rounded-md"
-                                            />
-                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded-md flex items-center justify-center">
-                                                <button className="bg-green-500 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    ▶
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <h3 className="text-white font-semibold truncate">{album.title}</h3>
-                                        <p className="text-gray-400 text-sm truncate">{album.artist}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-                </div>
-            )}
-
-            {/* Browse Categories when no search */}
-            {!searchTerm && (
-                <div className="space-y-8">
-                    <h2 className="text-2xl font-bold text-white mb-6">Browse All</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-                        {['Pop', 'Hip Hop', 'Rock', 'Electronic', 'R&B', 'Country', 'Jazz', 'Classical', 'Latin', 'K-Pop', 'Indie', 'Folk'].map((genre) => (
-                            <div
-                                key={genre}
-                                className="bg-gradient-to-br from-purple-600 to-pink-600 p-4 rounded-lg hover:scale-105 transition-transform cursor-pointer"
-                            >
-                                <h3 className="text-white font-semibold text-lg">{genre}</h3>
-                            </div>
-                        ))}
+                        )}
                     </div>
-                </div>
-            )}
+                </form>
+
+                {/* Error Message */}
+                {error && (
+                    <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg mb-6">
+                        {error}
+                    </div>
+                )}
+
+                {/* Search Results */}
+                {searchResults.length > 0 && (
+                    <div>
+                        <h2 className="text-xl font-semibold mb-4">
+                            Search Results ({searchResults.length})
+                        </h2>
+                        <div className="grid gap-4">
+                            {searchResults.map((song, index) => (
+                                <div
+                                    key={song.id}
+                                    className="flex items-center justify-between p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
+                                    onClick={() => handlePlaySong(song)}
+                                >
+                                    <div className="flex items-center space-x-4">
+                                        <span className="text-gray-400 w-8 font-bold">{index + 1}</span>
+                                        <img
+                                            src={song.cover}
+                                            alt={song.title}
+                                            className="w-12 h-12 rounded object-cover"
+                                        />
+                                        <div>
+                                            <h3 className="text-white font-medium">{song.title}</h3>
+                                            <p className="text-gray-300 text-sm">{song.artist}</p>
+                                            <p className="text-gray-400 text-xs">{song.album}</p>
+                                            {song.isSpotify && (
+                                                <span className="inline-block bg-green-600 text-white text-xs px-2 py-1 rounded mt-1">
+                                                    Spotify
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        <span className="text-gray-300 text-sm">{song.duration}</span>
+                                        <button className="text-green-400 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                            ▶
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* No Results */}
+                {searchQuery && !isSearching && searchResults.length === 0 && (
+                    <div className="text-center py-12">
+                        <div className="text-gray-400 text-6xl mb-4">🎵</div>
+                        <h2 className="text-2xl font-semibold mb-4">No results found</h2>
+                        <p className="text-gray-400">
+                            Try searching for a different song, artist, or album.
+                        </p>
+                    </div>
+                )}
+
+                {/* Initial State */}
+                {!searchQuery && (
+                    <div className="text-center py-12">
+                        <div className="text-gray-400 text-6xl mb-4">🎵</div>
+                        <h2 className="text-2xl font-semibold mb-4">Search for Music</h2>
+                        <p className="text-gray-400 mb-6">
+                            Search for your favorite songs, artists, or albums to start listening.
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                            <div className="bg-gray-800 p-4 rounded-lg">
+                                <div className="text-2xl mb-2">🎤</div>
+                                <h3 className="font-semibold mb-2">Artists</h3>
+                                <p className="text-sm text-gray-400">Find your favorite artists</p>
+                            </div>
+                            <div className="bg-gray-800 p-4 rounded-lg">
+                                <div className="text-2xl mb-2">🎵</div>
+                                <h3 className="font-semibold mb-2">Songs</h3>
+                                <p className="text-sm text-gray-400">Discover new tracks</p>
+                            </div>
+                            <div className="bg-gray-800 p-4 rounded-lg">
+                                <div className="text-2xl mb-2">💿</div>
+                                <h3 className="font-semibold mb-2">Albums</h3>
+                                <p className="text-sm text-gray-400">Explore full albums</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

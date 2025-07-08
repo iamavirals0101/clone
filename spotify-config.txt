@@ -1,0 +1,18 @@
+# Spotify App Configuration
+# Generated on: 2025-07-08T05:42:54.639Z
+
+APP_NAME="Spotify-Clone-1751953374639"
+WEBSITE="http://localhost:3000"
+REDIRECT_URI="http://localhost:3000/callback"
+
+# Instructions for Spotify Developer Dashboard:
+# 1. Go to: https://developer.spotify.com/dashboard
+# 2. Click "Create App"
+# 3. Use these exact settings:
+#    - App name: Spotify-Clone-1751953374639
+#    - App description: A React-based Spotify clone with real API integration
+#    - Website: http://localhost:3000
+#    - Redirect URI: http://localhost:3000/callback
+#    - API/SDKs: Check "Web API"
+# 4. Click "Save"
+# 5. Copy your Client ID and Client Secret

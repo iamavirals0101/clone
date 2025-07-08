@@ -7,12 +7,17 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "setup-spotify": "node setup-spotify.js",
+    "auto-setup": "node auto-setup-spotify.js",
+    "complete-setup": "node complete-setup.js",
+    "auto-setup-and-launch": "node auto-setup-and-launch.js"
   },
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.6.3"
+    "react-router-dom": "^7.6.3",
+    "axios": "^1.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
