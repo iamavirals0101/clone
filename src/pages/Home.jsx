@@ -1,6 +1,7 @@
 import React from 'react';
 import useMusicPlayer from '../hooks/useMusicPlayer';
 import { useMusicData } from '../contexts/MusicDataContext';
+// import LocalMusicLibrary from '../components/LocalMusicLibrary';
 
 const Home = () => {
     const { playPlaylist, playSong } = useMusicPlayer();
@@ -11,6 +12,55 @@ const Home = () => {
 
     // Filter Hindi songs
     const hindiSongs = songs.filter(song => song.isHindi);
+
+    // Local songs data
+    const localSongs = [
+        {
+            id: 'local-1',
+            title: 'Tum Hi Ho - Aashiqui 2',
+            artist: 'Arijit Singh',
+            audio: '/music/128-Tum Hi Ho - Aashiqui 2 128 Kbps.mp3',
+            cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&h=300&fit=crop&crop=center',
+            album: 'Aashiqui 2',
+            duration: '',
+        },
+        {
+            id: 'local-2',
+            title: 'Pachtaoge',
+            artist: 'Arijit Singh',
+            audio: '/music/128-Pachtaoge - Arijit Singh 128 Kbps.mp3',
+            cover: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=300&h=300&fit=crop&crop=center',
+            album: '',
+            duration: '',
+        },
+        {
+            id: 'local-3',
+            title: 'Jaan Nisaar (Arijit) - Kedarnath',
+            artist: 'Arijit Singh',
+            audio: '/music/128-Jaan ‘Nisaar (Arijit) - Kedarnath 128 Kbps.mp3',
+            cover: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=300&h=300&fit=crop&crop=center',
+            album: 'Kedarnath',
+            duration: '',
+        },
+        {
+            id: 'local-4',
+            title: 'Bekhayali (Arijit Singh Version) - Kabir Singh',
+            artist: 'Arijit Singh',
+            audio: '/music/128-Bekhayali (Arijit Singh Version) - Kabir Singh 128 Kbps.mp3',
+            cover: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=300&h=300&fit=crop&crop=center',
+            album: 'Kabir Singh',
+            duration: '',
+        },
+        {
+            id: 'local-5',
+            title: 'Mahi Aaja Solo Mix By Arijit Singh - Singh Is Bliing',
+            artist: 'Arijit Singh',
+            audio: '/music/Mahi Aaja Solo Mix By Arijit Singh - Singh Is Bliing 128 Kbps.mp3',
+            cover: 'https://images.unsplash.com/photo-1468657988500-aca2be09f4c6?w=300&h=300&fit=crop&crop=center',
+            album: 'Singh Is Bliing',
+            duration: '',
+        },
+    ];
 
     if (isLoading) {
         return (
@@ -49,42 +99,80 @@ const Home = () => {
                 <p className="text-gray-400">Welcome back to Spotify 2.0</p>
             </div>
 
+            {/* Local Songs Section */}
+            <section>
+                <h2 className="section-title">
+                    <span className="text-green-400 mr-2 align-middle">💾</span>
+                    Local Songs
+                </h2>
+                <p className="text-gray-400 text-sm mb-4">
+                    Songs stored locally in your app's <code>public/music</code> folder.
+                </p>
+                <div className="space-y-4">
+                    {localSongs.map((song, index) => (
+                        <div
+                            key={song.id}
+                            className="spotify-card relative flex items-center p-4 group cursor-pointer"
+                            onClick={() => playSong(song, localSongs)}
+                        >
+                            <img
+                                src={song.cover}
+                                alt={song.title}
+                                className="w-16 h-16 rounded object-cover shadow-lg mr-4"
+                            />
+                            <div className="flex-1 min-w-0">
+                                <div className="song-title truncate">{song.title}</div>
+                                <div className="song-artist truncate">{song.artist}</div>
+                                <div className="song-album truncate">{song.album}</div>
+                            </div>
+                            <button
+                                className="spotify-play-btn group-hover:opacity-100"
+                                onClick={e => { e.stopPropagation(); playSong(song, localSongs); }}
+                                tabIndex={-1}
+                                aria-label={`Play ${song.title}`}
+                            >
+                                ▶
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
             {/* Famous Songs Section */}
             {famousSongs.length > 0 && (
                 <section>
-                    <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                        <span className="text-yellow-400 mr-2">⭐</span>
+                    <h2 className="section-title">
+                        <span className="text-yellow-400 mr-2 align-middle">⭐</span>
                         Famous Songs (Inspired Versions)
                     </h2>
                     <p className="text-gray-400 text-sm mb-4">
                         Free music inspired by iconic tracks - featuring real audio from Bensound
                     </p>
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                         {famousSongs.map((song, index) => (
                             <div
                                 key={song.id}
-                                className="flex items-center justify-between p-3 hover:bg-gray-800 rounded-lg cursor-pointer group bg-gradient-to-r from-gray-800 to-gray-700"
+                                className="spotify-card relative flex items-center p-4 group cursor-pointer"
                                 onClick={() => playSong(song, famousSongs)}
                             >
-                                <div className="flex items-center space-x-4">
-                                    <span className="text-yellow-400 w-8 font-bold">{index + 1}</span>
-                                    <img
-                                        src={song.cover}
-                                        alt={song.title}
-                                        className="w-12 h-12 rounded object-cover"
-                                    />
-                                    <div>
-                                        <h4 className="text-white font-medium">{song.title}</h4>
-                                        <p className="text-gray-400 text-sm">{song.artist}</p>
-                                        <p className="text-gray-500 text-xs">{song.album}</p>
-                                    </div>
+                                <img
+                                    src={song.cover}
+                                    alt={song.title}
+                                    className="w-16 h-16 rounded object-cover shadow-lg mr-4"
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <div className="song-title truncate">{song.title}</div>
+                                    <div className="song-artist truncate">{song.artist}</div>
+                                    <div className="song-album truncate">{song.album}</div>
                                 </div>
-                                <div className="flex items-center space-x-4">
-                                    <span className="text-gray-400 text-sm">{song.duration}</span>
-                                    <button className="text-yellow-400 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                                        ▶
-                                    </button>
-                                </div>
+                                <button
+                                    className="spotify-play-btn group-hover:opacity-100"
+                                    onClick={e => { e.stopPropagation(); playSong(song, famousSongs); }}
+                                    tabIndex={-1}
+                                    aria-label={`Play ${song.title}`}
+                                >
+                                    ▶
+                                </button>
                             </div>
                         ))}
                     </div>
@@ -94,39 +182,38 @@ const Home = () => {
             {/* Hindi Songs Section */}
             {hindiSongs.length > 0 && (
                 <section>
-                    <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                        <span className="text-orange-400 mr-2">🎵</span>
+                    <h2 className="section-title">
+                        <span className="text-orange-400 mr-2 align-middle">🎵</span>
                         Hindi Songs (Inspired Versions)
                     </h2>
                     <p className="text-gray-400 text-sm mb-4">
                         Popular Hindi tracks with real audio from Bensound - featuring actual music
                     </p>
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                         {hindiSongs.map((song, index) => (
                             <div
                                 key={song.id}
-                                className="flex items-center justify-between p-3 hover:bg-gray-800 rounded-lg cursor-pointer group bg-gradient-to-r from-orange-900 to-orange-800"
+                                className="spotify-card relative flex items-center p-4 group cursor-pointer"
                                 onClick={() => playSong(song, hindiSongs)}
                             >
-                                <div className="flex items-center space-x-4">
-                                    <span className="text-orange-400 w-8 font-bold">{index + 1}</span>
-                                    <img
-                                        src={song.cover}
-                                        alt={song.title}
-                                        className="w-12 h-12 rounded object-cover"
-                                    />
-                                    <div>
-                                        <h4 className="text-white font-medium">{song.title}</h4>
-                                        <p className="text-gray-300 text-sm">{song.artist}</p>
-                                        <p className="text-gray-400 text-xs">{song.album}</p>
-                                    </div>
+                                <img
+                                    src={song.cover}
+                                    alt={song.title}
+                                    className="w-16 h-16 rounded object-cover shadow-lg mr-4"
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <div className="song-title truncate">{song.title}</div>
+                                    <div className="song-artist truncate">{song.artist}</div>
+                                    <div className="song-album truncate">{song.album}</div>
                                 </div>
-                                <div className="flex items-center space-x-4">
-                                    <span className="text-gray-300 text-sm">{song.duration}</span>
-                                    <button className="text-orange-400 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                                        ▶
-                                    </button>
-                                </div>
+                                <button
+                                    className="spotify-play-btn group-hover:opacity-100"
+                                    onClick={e => { e.stopPropagation(); playSong(song, hindiSongs); }}
+                                    tabIndex={-1}
+                                    aria-label={`Play ${song.title}`}
+                                >
+                                    ▶
+                                </button>
                             </div>
                         ))}
                     </div>

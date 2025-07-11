@@ -1,136 +1,61 @@
 import React from 'react';
-import { useMusicData } from '../contexts/MusicDataContext';
+import { NavLink } from 'react-router-dom';
+import { FaHome, FaSearch, FaMusic, FaList, FaBook, FaSpotify } from 'react-icons/fa';
 import { useSpotify } from '../contexts/SpotifyContext';
 
-const Sidebar = ({ currentPage, setCurrentPage }) => {
-    const { playlists = [], hindiSongs = [] } = useMusicData();
-    const { isAuthenticated, login, logout, userPlaylists = [] } = useSpotify();
+const navLinks = [
+    { to: '/', label: 'Home', icon: <FaHome /> },
+    { to: '/search', label: 'Search', icon: <FaSearch /> },
+    { to: '/genres', label: 'Genres', icon: <FaMusic /> },
+    { to: '/playlists', label: 'Playlists', icon: <FaList /> },
+    { to: '/library', label: 'Library', icon: <FaBook /> },
+];
 
-    const navigationItems = [
-        { id: 'home', label: 'Home', icon: '🏠' },
-        { id: 'search', label: 'Search', icon: '🔍' },
-        { id: 'library', label: 'Library', icon: '📚' },
-        { id: 'playlists', label: 'Playlists', icon: '🎵' },
-        { id: 'genres', label: 'Genres', icon: '🎼' }
-    ];
+function Sidebar() {
+    const { isAuthenticated, login, logout, isLoading } = useSpotify();
 
     return (
-        <div className="w-64 bg-gray-800 text-white p-6 flex flex-col">
-            {/* Logo */}
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-green-500">Spotify 2.0</h1>
+        <aside className="spotify-sidebar">
+            <div className="spotify-sidebar-logo">
+                <svg width="32" height="32" viewBox="0 0 1134 340" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="170" cy="170" r="170" fill="#1DB954" /></svg>
+                Spotify
             </div>
-
-            {/* Spotify Authentication */}
-            <div className="mb-6 p-4 bg-gray-700 rounded-lg">
-                {isAuthenticated ? (
-                    <div className="text-center">
-                        <div className="text-green-500 text-2xl mb-2">✅</div>
-                        <p className="text-sm text-gray-300 mb-2">Connected to Spotify</p>
-                        <button
-                            onClick={logout}
-                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors"
-                        >
-                            Disconnect
-                        </button>
-                    </div>
-                ) : (
-                    <div className="text-center">
-                        <div className="text-gray-400 text-2xl mb-2">🎵</div>
-                        <p className="text-sm text-gray-300 mb-2">Connect to Spotify</p>
-                        <button
-                            onClick={login}
-                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors"
-                        >
-                            Connect
-                        </button>
-                    </div>
-                )}
-            </div>
-
-            {/* Navigation */}
-            <nav className="flex-1">
-                <ul className="space-y-2">
-                    {navigationItems.map((item) => (
-                        <li key={item.id}>
-                            <button
-                                onClick={() => setCurrentPage(item.id)}
-                                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${currentPage === item.id
-                                    ? 'bg-green-600 text-white'
-                                    : 'text-gray-300 hover:bg-gray-700'
-                                    }`}
-                            >
-                                <span className="mr-3">{item.icon}</span>
-                                {item.label}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-
-                {/* Divider */}
-                <div className="border-t border-gray-600 my-6"></div>
-
-                {/* Playlists */}
-                <div className="mb-4">
-                    <h3 className="text-sm font-semibold text-gray-400 mb-3">YOUR PLAYLISTS</h3>
-                    <ul className="space-y-1">
-                        {playlists.map((playlist) => (
-                            <li key={playlist.id}>
-                                <button
-                                    onClick={() => setCurrentPage('playlists')}
-                                    className="w-full text-left px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors text-sm"
-                                >
-                                    📁 {playlist.name}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Hindi Songs Playlist */}
-                {hindiSongs.length > 0 && (
-                    <div className="mb-4">
-                        <h3 className="text-sm font-semibold text-gray-400 mb-3">HINDI SONGS</h3>
-                        <ul className="space-y-1">
-                            <li>
-                                <button
-                                    onClick={() => setCurrentPage('playlists')}
-                                    className="w-full text-left px-4 py-2 rounded-lg text-orange-400 hover:bg-orange-900 transition-colors text-sm"
-                                >
-                                    🎵 Hindi Hits
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                )}
-
-                {/* Spotify Playlists (if authenticated) */}
-                {isAuthenticated && userPlaylists.length > 0 && (
-                    <div className="mb-4">
-                        <h3 className="text-sm font-semibold text-gray-400 mb-3">SPOTIFY PLAYLISTS</h3>
-                        <ul className="space-y-1">
-                            {userPlaylists.slice(0, 5).map((playlist) => (
-                                <li key={playlist.id}>
-                                    <button
-                                        onClick={() => setCurrentPage('playlists')}
-                                        className="w-full text-left px-4 py-2 rounded-lg text-green-400 hover:bg-green-900 transition-colors text-sm"
-                                    >
-                                        🎵 {playlist.name}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+            <nav className="flex flex-col gap-2 flex-1">
+                {navLinks.map(link => (
+                    <NavLink
+                        key={link.to}
+                        to={link.to}
+                        className={({ isActive }) =>
+                            isActive ? 'spotify-sidebar-link spotify-sidebar-link-active' : 'spotify-sidebar-link'
+                        }
+                        end={link.to === '/'}
+                    >
+                        <span className="text-xl">{link.icon}</span>
+                        <span>{link.label}</span>
+                    </NavLink>
+                ))}
             </nav>
-
-            {/* Footer */}
-            <div className="text-xs text-gray-500 text-center">
-                <p>© 2024 Spotify 2.0 Clone</p>
-                <p className="mt-1">Built with React & Tailwind</p>
+            <div className="mt-8">
+                {isAuthenticated ? (
+                    <button
+                        onClick={logout}
+                        className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                        disabled={isLoading}
+                    >
+                        <FaSpotify className="text-lg" /> Disconnect Spotify
+                    </button>
+                ) : (
+                    <button
+                        onClick={login}
+                        className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                        disabled={isLoading}
+                    >
+                        <FaSpotify className="text-lg" /> Connect to Spotify
+                    </button>
+                )}
             </div>
-        </div>
+        </aside>
     );
-};
+}
 
 export default Sidebar; 

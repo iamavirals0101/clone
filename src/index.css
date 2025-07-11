@@ -2,6 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --spotify-green: #1db954;
+  --spotify-dark: #191414;
+  --spotify-gray: #282828;
+  --spotify-light-gray: #b3b3b3;
+}
+
+/* Spotify-like card shadow */
+.spotify-card {
+  background: linear-gradient(135deg, #232526 0%, #191414 100%);
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.4);
+  border-radius: 1rem;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.spotify-card:hover {
+  transform: scale(1.03) translateY(-2px);
+  box-shadow: 0 8px 32px 0 rgba(30, 185, 84, 0.15);
+}
+
+/* Floating play button */
+.spotify-play-btn {
+  background: var(--spotify-green);
+  color: #fff;
+  border-radius: 9999px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 2px 8px 0 rgba(30, 185, 84, 0.2);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.2s, transform 0.2s;
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2;
+}
+
+.spotify-card:hover .spotify-play-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Section title accent */
+.section-title {
+  border-left: 4px solid var(--spotify-green);
+  padding-left: 0.75rem;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.5px;
+}
+
+/* Song info */
+.song-title {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.song-artist {
+  color: var(--spotify-light-gray);
+  font-size: 0.95rem;
+}
+
+.song-album {
+  color: #888;
+  font-size: 0.85rem;
+}
+
 /* Custom slider styles */
 .slider::-webkit-slider-thumb {
   appearance: none;
@@ -62,4 +136,52 @@
 
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Spotify-like sidebar */
+.spotify-sidebar {
+  background: var(--spotify-dark);
+  color: #fff;
+  width: 240px;
+  min-height: 100vh;
+  padding: 2rem 1.25rem 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  box-shadow: 2px 0 16px 0 rgba(0, 0, 0, 0.15);
+}
+
+.spotify-sidebar-logo {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: var(--spotify-green);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spotify-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  color: #fff;
+  font-weight: 500;
+  font-size: 1.08rem;
+  transition: background 0.15s, color 0.15s;
+  text-decoration: none;
+}
+
+.spotify-sidebar-link:hover {
+  background: #282828;
+  color: var(--spotify-green);
+}
+
+.spotify-sidebar-link-active {
+  background: #282828;
+  color: var(--spotify-green);
+  font-weight: 700;
 }
